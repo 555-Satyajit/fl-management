@@ -10,8 +10,9 @@ const userRoutes = require('./routes/User');
 const app = express();
 
 // CORS Configuration
-const allowedOrigins = [ 
-    'https://agromitra-o5dnsafvq-555-satyajits-projects.vercel.app',
+const allowedOrigins = [
+  'https://agromitra.vercel.app',
+  'http://localhost:3000',
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
