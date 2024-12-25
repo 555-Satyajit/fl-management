@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const AuthContext = createContext(null);
 const API_URL = process.env.REACT_APP_API_URL;
@@ -69,34 +70,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
   
-  const register = async (userData) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: 'POST',
-        credentials: 'include', // Add this
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'  // Add this
-        },
-        body: JSON.stringify(userData)
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-  
-      toast.success('Registration successful! Please check your email for verification.');
-      navigate('/login');
-    } catch (error) {
-      toast.error(error.message);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+
+// Set default configs
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Accept'] = 'application/json';
+
+// Update the register function
+const register = async (userData) => {
+  try {
+    setLoading(true);
+    const { data } = await axios.post('/api/auth/register', userData);
+    toast.success('Registration successful! Please check your email for verification.');
+    navigate('/login');
+    return data;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Registration failed';
+    toast.error(message);
+    throw new Error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const logout = () => {
     localStorage.removeItem('token');
