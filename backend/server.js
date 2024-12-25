@@ -9,27 +9,38 @@ const userRoutes = require('./routes/User');
 
 const app = express();
 
-// Security Middleware
+// CORS Configuration
+const allowedOrigins = [
+  'https://agromitra.vercel.app',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    process.env.FRONTEND_URL,
-    'http://localhost:3000',
-    'https://agromitra.vercel.app',
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
+// Enhanced CORS configuration
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+  }
 
-// Use CORS middleware
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
+  next();
+});
+
+// Security middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginResourcePolicy: false, // Allow cross-origin resource sharing
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -43,6 +54,8 @@ app.use('/api', limiter);
 // Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
 
 // Health check endpoint
 app.get('/health', (req, res) => {
