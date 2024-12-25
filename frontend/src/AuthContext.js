@@ -77,10 +77,13 @@ axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 // Update the register function
+// Update the register function
 const register = async (userData) => {
   try {
     setLoading(true);
-    const { data } = await axios.post('/api/auth/register', userData);
+    const { data } = await axios.post('/api/auth/register', userData, {
+      withCredentials: true // Ensure credentials (cookies) are included
+    });
     toast.success('Registration successful! Please check your email for verification.');
     navigate('/login');
     return data;
@@ -92,6 +95,7 @@ const register = async (userData) => {
     setLoading(false);
   }
 };
+
 
   const logout = () => {
     localStorage.removeItem('token');
