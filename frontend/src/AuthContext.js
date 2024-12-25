@@ -28,7 +28,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ email, password })
       });
   
@@ -70,16 +74,20 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Add this
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'  // Add this
+        },
         body: JSON.stringify(userData)
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-
+  
       toast.success('Registration successful! Please check your email for verification.');
       navigate('/login');
     } catch (error) {

@@ -10,7 +10,6 @@ const userRoutes = require('./routes/User');
 const app = express();
 
 // Security Middleware
-app.use(helmet());
 
 // CORS configuration
 const corsOptions = {
@@ -24,7 +23,10 @@ const corsOptions = {
 
 // Use CORS middleware
 app.use(cors(corsOptions));
-
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+}));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
