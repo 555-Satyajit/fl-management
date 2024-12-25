@@ -82,7 +82,8 @@ const register = async (userData) => {
   try {
     setLoading(true);
     const { data } = await axios.post('/api/auth/register', userData, {
-      withCredentials: true // Ensure credentials (cookies) are included
+      withCredentials: true, // Ensure credentials (cookies) are included
+      mode: 'no-cors'  // Temporarily bypass CORS
     });
     toast.success('Registration successful! Please check your email for verification.');
     navigate('/login');
