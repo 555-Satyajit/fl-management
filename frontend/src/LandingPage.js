@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef  } from 'react';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from './LoadingSpinner';
+import translations from './translations';
+
 import { 
   Sprout, 
   BarChart3, 
@@ -23,7 +25,8 @@ import {
   Shield,
   Users,
   Droplets,
-  Bug
+  Bug,
+  Globe
 } from 'lucide-react';
 
 
@@ -31,133 +34,241 @@ import {
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState({});
+  const [currentLang, setCurrentLang] = useState('en');
+  const isLanguageChange = useRef(false);
+
+  // Get translations for current language
+  const t = translations[currentLang];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
-          setIsVisible(prev => ({
-            ...prev,
-            [entry.target.id]: entry.isIntersecting
-          }));
+          // Only update visibility if it's not a language change
+          if (!isLanguageChange.current) {
+            setIsVisible(prev => ({
+              ...prev,
+              [entry.target.id]: entry.isIntersecting
+            }));
+          }
         });
       },
       { threshold: 0.1 }
     );
 
+    // Observe all animated elements
     document.querySelectorAll('[data-animate]').forEach((element) => {
       observer.observe(element);
     });
 
+    // Reset language change flag after elements are observed
+    isLanguageChange.current = false;
+
     return () => observer.disconnect();
-  }, []);
+  }, [currentLang]);
+
+  // Language toggle component
+  const LanguageToggle = () => (
+    <div className="flex items-center bg-[#8B4513]/20 px-3 py-2 rounded-lg border border-[#E6B17E]/30 hover:bg-[#8B4513]/30 transition-all duration-300">
+      <Globe className="h-5 w-5 text-[#E6B17E] mr-2" />
+      <select
+        value={currentLang}
+        onChange={(e) => {
+          isLanguageChange.current = true;
+          setCurrentLang(e.target.value);
+        }}
+        className="bg-transparent text-[#E6B17E] font-medium border-none focus:outline-none cursor-pointer hover:text-[#F3D5B5] transition-colors duration-300 appearance-none pr-6"
+        style={{
+          backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E6B17E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right center',
+          backgroundSize: '16px'
+        }}
+      >
+        <option value="en" className="bg-[#2C1810] text-[#E6B17E]">English</option>
+        <option value="or" className="bg-[#2C1810] text-[#E6B17E]">ଓଡ଼ିଆ</option>
+      </select>
+    </div>
+  );
+  
+
+  // Features section component rendering
+  const renderFeatureSection = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {features.map((feature, index) => (
+        <div 
+          key={feature.title}
+          id={`feature-${index}`}
+          data-animate 
+          className={`bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transform transition-all duration-500 hover:-translate-y-1 ${
+            isVisible[`feature-${index}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          } border border-[#E6B17E]/20`}
+        >
+          <div className="w-12 h-12 bg-[#8B4513]/10 rounded-lg flex items-center justify-center mb-6">
+            <feature.icon className="h-6 w-6 text-[#8B4513]" />
+          </div>
+          <h3 className="text-xl font-semibold text-[#2C1810] mb-4">{feature.title}</h3>
+          <p className="text-[#5C4033]">{feature.description}</p>
+        </div>
+      ))}
+    </div>
+  );
 
   const features = [
     {
-      title: 'Smart Farm Management',
-      description: 'Blend traditional farming wisdom with modern technology. Track crops, resources, and performance all in one place.',
+      title: t.features.smartFarm.title,
+      description: t.features.smartFarm.description,
       icon: Sprout
     },
     {
-      title: 'Advanced Analytics',
-      description: 'Make data-driven decisions while respecting time-tested farming practices.',
+      title: t.features.analytics.title,
+      description: t.features.analytics.description,
       icon: BarChart3
     },
     {
-      title: 'Weather Integration',
-      description: 'Combine traditional weather wisdom with modern forecasting technology.',
+      title: t.features.weather.title,
+      description: t.features.weather.description,
       icon: CloudRain
     },
     {
-      title: 'Resource Optimization',
-      description: 'Balance traditional conservation methods with AI-powered recommendations.',
+      title: t.features.resource.title,
+      description: t.features.resource.description,
       icon: Settings
     }
   ];
 
-  const testimonials = [
-    {
-      name: "John Smith",
-      role: "Third Generation Farmer",
-      content: "FarmSmart helped us maintain our traditional practices while improving efficiency by 40%.",
-      image: "/api/placeholder/100/100"
-    },
-    {
-      name: "Sarah Johnson",
-      role: "Agricultural Specialist",
-      content: "The perfect blend of old-school farming wisdom and modern technology.",
-      image: "/api/placeholder/100/100"
-    }
-  ];
-
+  // Define mlTools array
   const mlTools = [
     {
-      title: 'Water Usage Prediction',
-      description: 'Optimize your water resources with AI-powered predictions based on crop type, season, and environmental factors.',
+      title: t.mlTools.water.title,
+      description: t.mlTools.water.description,
       icon: Droplets,
       link: '/water-prediction'
     },
     {
-      title: 'Crop Yield Prediction',
-      description: 'Get accurate yield forecasts using advanced machine learning models that consider multiple agricultural variables.',
+      title: t.mlTools.yield.title,
+      description: t.mlTools.yield.description,
       icon: Sprout,
-      link: ' https://huggingface.co/spaces/Satya-555/crop-predictor'
+      link: 'https://huggingface.co/spaces/Satya-555/crop-predictor'
     },
     {
-      title: 'Disease Detection',
-      description: 'Early detection of crop diseases using computer vision and AI to protect your harvest.',
+      title: t.mlTools.disease.title,
+      description: t.mlTools.disease.description,
       icon: Bug,
       link: '/disease-detection'
     }
   ];
+
+
+  const testimonials = [
+    {
+      name: t.testimonials.farmer1.name,
+      role: t.testimonials.farmer1.role,
+      content: t.testimonials.farmer1.content,
+      image: "/api/placeholder/100/100"
+    },
+    {
+      name: t.testimonials.farmer2.name,
+      role: t.testimonials.farmer2.role,
+      content: t.testimonials.farmer2.content,
+      image: "/api/placeholder/100/100"
+    }
+  ];
+
+  
+  // ML Tools section component rendering
+  const renderMLToolsSection = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {mlTools.map((tool, index) => (
+        <div
+          key={tool.title}
+          id={`ml-tool-${index}`}
+          data-animate
+          className={`bg-white rounded-xl p-8 shadow-lg transform transition-all duration-500 hover:scale-105 ${
+            isVisible[`ml-tool-${index}`] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}
+        >
+          <a href={tool.link} className="block h-full">
+            <div className="w-12 h-12 bg-[#8B4513]/10 rounded-lg flex items-center justify-center mb-6">
+              <tool.icon className="h-6 w-6 text-[#8B4513]" />
+            </div>
+            <h3 className="text-xl font-semibold text-[#2C1810] mb-4">{tool.title}</h3>
+            <p className="text-[#5C4033] mb-6">{tool.description}</p>
+            <div className="flex items-center text-[#8B4513] font-semibold">
+              Try Now <ArrowRight className="ml-2 h-5 w-5" />
+            </div>
+          </a>
+        </div>
+      ))}
+    </div>
+  );
+
 
   return (
     <div className="min-h-screen bg-[#FAF6F1]">
           <LoadingSpinner />
       {/* Navigation */}
       <nav className="sticky top-0 bg-[#2C1810]/95 backdrop-blur-md shadow-lg z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center space-x-2">
-              <Sprout className="h-8 w-8 text-[#E6B17E]" />
-              <span className="text-2xl font-bold text-[#E6B17E]">FarmSmart</span>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">Features</a>
-              <a href="#ml-tools" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">ML Tools</a>
-              <a href="#testimonials" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">Testimonials</a>
-              <a href="#about" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">About</a>
-              <a href="/login" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">Login</a>
-              <a href="/register" className="bg-[#8B4513] text-white px-6 py-2 rounded-lg hover:bg-[#A0522D] transition-colors duration-300 shadow-lg">
-                Get Started
-              </a>
-            </div>
+        <div className="max-w-7xl mx-auto px-4">
+  <div className="relative flex items-center h-16">
+    {/* Logo */}
+    <div className="absolute left-4 flex items-center">
+      <Sprout className="h-8 w-8 text-[#E6B17E]" />
+      <span className="text-2xl font-bold text-[#E6B17E] ml-2">FarmSmart</span>
+    </div>
+    
+    {/* Center Navigation */}
+    <div className="hidden md:flex items-center justify-center w-full">
+      <div className="flex space-x-12">
+        <a href="#features" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.features}</a>
+        <a href="#ml-tools" className="text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.mlTools}</a>
+        <a href="#testimonials" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.testimonials}</a>
+        <a href="#about" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.about}</a>
+        <a href="/login" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.login}</a>
+      </div>
+    </div>
 
-            <div className="md:hidden flex items-center">
-              <button
-                className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
+    {/* Right Side Actions */}
+    <div className="hidden md:flex absolute right-4 items-center space-x-4">
+      <LanguageToggle />
+      <a href="/register" className="bg-[#8B4513] text-white px-6 py-2 rounded-lg hover:bg-[#A0522D] transition-colors duration-300 shadow-lg">
+        {t.nav.getStarted}
+      </a>
+    </div>
+
+        {/* Mobile menu button */}
+        <div className="md:hidden flex items-center">
+            <button
+              className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
 
+        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden bg-[#2C1810] border-t border-[#E6B17E]/20">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#features" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">Features</a>
-              <a href="#ml-tools" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">ML Tools</a>
-              <a href="#testimonials" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">Testimonials</a>
-              <a href="#about" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">About</a>
-              <Link to="/login" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">Login</Link>
-              <a href="/register" className="block px-3 py-2 text-[#E6B17E] font-medium">Get Started</a>
+            <div className="px-2 pt-2 pb-3 space-y-3">
+              <a href="#features" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.features}</a>
+              <a href="#ml-tools" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.mlTools}</a>
+              <a href="#testimonials" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.testimonials}</a>
+              <a href="#about" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.about}</a>
+              <Link to="/login" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.login}</Link>
+              <div className="px-3 py-2">
+                <LanguageToggle 
+                  currentLang={currentLang}
+                  setCurrentLang={setCurrentLang}
+                  isLanguageChange={isLanguageChange}
+                />
+              </div>
+              <a href="/register" className="block px-3 py-2 text-[#E6B17E] font-medium">{t.nav.getStarted}</a>
             </div>
           </div>
         )}
-      </nav>
+      </div>
+    </nav>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-[#2C1810] text-white">
@@ -165,25 +276,21 @@ const LandingPage = () => {
           <Wheat className="absolute top-20 right-0 text-[#8B4513]/20 h-96 w-96 animate-float" />
           <Tractor className="absolute bottom-0 left-0 text-[#8B4513]/20 h-72 w-72 animate-float-delayed" />
         </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32">
-          <div 
-            className="text-center max-w-3xl mx-auto animate-fade-in"
-          >
-            <h1 className="text-5xl md:text-6xl font-bold mb-8">
-              Cultivating Tomorrow,
-              <span className="block text-[#E6B17E] mt-2">Honoring Today</span>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold mb-8 animate-title">
+              {t.heroTitle}
+              <span className="block text-[#E6B17E] mt-2 animate-title-delayed">{t.heroTitleSpan}</span>
             </h1>
-            <p className="text-xl text-[#F3D5B5] mb-12 max-w-2xl mx-auto">
-              Where traditional farming wisdom meets modern innovation. 
-              Experience the perfect balance of time-tested practices and cutting-edge technology.
+            <p className="text-xl text-[#F3D5B5] mb-12 max-w-2xl mx-auto animate-paragraph">
+              {t.heroDescription}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-buttons">
               <a href="/register" className="inline-block bg-[#8B4513] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#A0522D] transform hover:scale-105 transition-all duration-300 shadow-lg">
-                Start Your Journey
+                {t.startJourney}
               </a>
               <a href="#features" className="inline-block bg-[#E6B17E]/10 text-[#E6B17E] border border-[#E6B17E] px-8 py-3 rounded-lg text-lg font-semibold hover:bg-[#E6B17E]/20 transform hover:scale-105 transition-all duration-300">
-                Learn More
+                {t.learnMore}
               </a>
             </div>
           </div>
@@ -197,22 +304,22 @@ const LandingPage = () => {
             <div className="flex flex-col items-center">
               <Users className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">10,000+</div>
-              <div className="text-sm opacity-80">Active Farmers</div>
+              <div className="text-sm opacity-80">{t.activeFarmers}</div>
             </div>
             <div className="flex flex-col items-center">
               <Shield className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">100%</div>
-              <div className="text-sm opacity-80">Secure Data</div>
+              <div className="text-sm opacity-80">{t.secureData}</div>
             </div>
             <div className="flex flex-col items-center">
               <Clock className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">24/7</div>
-              <div className="text-sm opacity-80">Support</div>
+              <div className="text-sm opacity-80">{t.support}</div>
             </div>
             <div className="flex flex-col items-center">
               <Sprout className="h-8 w-8 mb-2" />
               <div className="text-2xl font-bold">50K+</div>
-              <div className="text-sm opacity-80">Acres Managed</div>
+              <div className="text-sm opacity-80">{t.acresManaged}</div>
             </div>
           </div>
         </div>
@@ -229,10 +336,10 @@ const LandingPage = () => {
             }`}
           >
             <h2 className="text-3xl font-bold text-[#2C1810] sm:text-4xl mb-4">
-              Traditional Wisdom, Modern Solutions
+            {t.featuresTitle}
             </h2>
             <p className="text-xl text-[#5C4033] max-w-2xl mx-auto">
-              Bridging generations of farming knowledge with innovative technology
+              {t.featuresSubtitle}
             </p>
           </div>
 
@@ -270,10 +377,10 @@ const LandingPage = () => {
             }`}
           >
             <h2 className="text-3xl font-bold text-white sm:text-4xl mb-4">
-              Smart Farming Tools
+            {t.mlToolsTitle}
             </h2>
             <p className="text-xl text-[#E6B17E] max-w-2xl mx-auto">
-              Harness the power of artificial intelligence to optimize your farming operations
+              {t.mlToolsSubtitle}
             </p>
           </div>
 
@@ -315,10 +422,10 @@ const LandingPage = () => {
       }`}
     >
       <h2 className="text-3xl font-bold text-[#2C1810] sm:text-4xl mb-4">
-        Trusted by Farmers Worldwide
+        {t.testimonialsTitle}
       </h2>
       <p className="text-[#8B4513] text-xl">
-        Hear from those who've transformed their farming practices
+       {t.testimonialsSubtitle}
       </p>
     </div>
 
@@ -362,13 +469,13 @@ const LandingPage = () => {
     }`}
   >
     <h2 className="text-3xl font-bold text-white mb-4">
-      Ready to Transform Your Farm?
+      {t.ctaTitle}
     </h2>
     <p className="text-[#F3D5B5] mb-8 text-lg max-w-2xl mx-auto">
-      Join thousands of farmers who are already benefiting from our smart farming solutions
+     {t.ctaDescription}
     </p>
     <a href="/signup" className="inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-lg text-[#8B4513] bg-white hover:bg-[#F3D5B5] transform hover:scale-105 transition-all duration-300">
-      Get Started Today
+      {t.ctaButton}
       <ArrowRight className="ml-2 h-5 w-5" />
     </a>
   </div>
@@ -376,8 +483,9 @@ const LandingPage = () => {
 
 {/* Footer */}
 <footer className="bg-[#2C1810] text-[#F3D5B5]">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      
       {/* Company Info */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2">
@@ -385,7 +493,7 @@ const LandingPage = () => {
           <span className="text-xl font-bold text-[#E6B17E]">FarmSmart</span>
         </div>
         <p className="text-sm">
-          Empowering farmers with smart solutions while preserving traditional wisdom.
+        {t.footer.companyDesc}
         </p>
         <div className="flex space-x-4">
           <a href="#" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">
@@ -405,62 +513,64 @@ const LandingPage = () => {
 
       {/* Quick Links */}
       <div>
-        <h3 className="text-[#E6B17E] font-semibold mb-4">Quick Links</h3>
+        <h3 className="text-[#E6B17E] font-semibold mb-4">{t.footer.quickLinks}</h3>
         <ul className="space-y-2">
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Features</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Blog</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Testimonials</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Pricing</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Contact</a></li>
+  <li><a href="#" className="hover:text-[#E6B17E]">{t.footer.quickLinksItems.features}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.quickLinksItems.blog}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.quickLinksItems.testimonials}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.quickLinksItems.pricing}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.quickLinksItems.contact}</a></li>
         </ul>
       </div>
 
       {/* Services */}
       <div>
-        <h3 className="text-[#E6B17E] font-semibold mb-4">Our Services</h3>
+        <h3 className="text-[#E6B17E] font-semibold mb-4">{t.footer.services.title}</h3>
         <ul className="space-y-2">
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Farm Management</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Crop Planning</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Weather Forecasting</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Resource Optimization</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Market Integration</a></li>
-          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Support Center</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.management}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.planning}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.weather}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.optimization}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.market}</a></li>
+          <li><a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.services.items.support}</a></li>
         </ul>
       </div>
 
       {/* Contact Info */}
-      <div>
-        <h3 className="text-[#E6B17E] font-semibold mb-4">Contact Us</h3>
-        <ul className="space-y-4">
-          <li className="flex items-center space-x-3">
-            <MapPin size={20} className="text-[#E6B17E]" />
-            <span>123 Farm Road, Agricultural District, Country</span>
-          </li>
-          <li className="flex items-center space-x-3">
-            <Phone size={20} className="text-[#E6B17E]" />
-            <span>+1 (555) 123-4567</span>
-          </li>
-          <li className="flex items-center space-x-3">
-            <Mail size={20} className="text-[#E6B17E]" />
-            <span>support@farmsmart.com</span>
-          </li>
-        </ul>
-      </div>
-    </div>
+            <div>
+             <h3 className="text-[#E6B17E] font-semibold mb-4">{t.footer.contact.title}</h3>
+              <ul className="space-y-4">
+               <li className="flex items-center space-x-3">
+              <MapPin size={20} className="text-[#E6B17E] flex-shrink-0" />
+               <span className="leading-relaxed">
+                  {t.footer.contact.address}
+                    </span>
+                  </li>
+                      <li className="flex items-center space-x-3">
+                        <Phone size={20} className="text-[#E6B17E] flex-shrink-0" />
+                        <span>+1 (555) 123-4567</span>
+                      </li>
+                      <li className="flex items-center space-x-3">
+                        <Mail size={20} className="text-[#E6B17E] flex-shrink-0" />
+                        <span>support@farmsmart.com</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
     {/* Newsletter */}
     <div className="border-t border-[#E6B17E]/20 mt-12 pt-8">
       <div className="max-w-md mx-auto text-center">
-        <h3 className="text-[#E6B17E] font-semibold mb-4">Subscribe to Our Newsletter</h3>
-        <p className="mb-4">Stay updated with the latest farming insights and tips</p>
+        <h3 className="text-[#E6B17E] font-semibold mb-4">{t.footer.newsletter.title}</h3>
+        <p className="mb-4">{t.footer.newsletter.description}</p>
         <div className="flex gap-2">
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder={t.footer.newsletter.placeholder}
             className="flex-1 px-4 py-2 rounded-lg bg-[#8B4513]/20 border border-[#E6B17E]/20 focus:outline-none focus:border-[#E6B17E]"
           />
           <button className="px-6 py-2 bg-[#8B4513] text-white rounded-lg hover:bg-[#A0522D] transform hover:scale-105 transition-all duration-300">
-            Subscribe
+          {t.footer.newsletter.button}
           </button>
         </div>
       </div>
@@ -470,12 +580,12 @@ const LandingPage = () => {
     <div className="border-t border-[#E6B17E]/20 mt-12 pt-8">
       <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         <div className="text-sm">
-          © 2024 FarmSmart. All rights reserved.
+        {t.footer.legal.copyright}
         </div>
         <div className="flex space-x-6 text-sm">
-          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Privacy Policy</a>
-          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Terms of Service</a>
-          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">Cookie Policy</a>
+          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.legal.privacy}</a>
+          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.legal.terms}</a>
+          <a href="#" className="hover:text-[#E6B17E] transition-colors duration-300">{t.footer.legal.cookies}</a>
         </div>
       </div>
     </div>
@@ -494,6 +604,17 @@ const LandingPage = () => {
     to { opacity: 1; }
   }
 
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -505,6 +626,26 @@ const LandingPage = () => {
 
   .animate-fade-in {
     animation: fadeIn 1s ease-out;
+  }
+
+  .animate-title {
+    animation: slideUp 1s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-title-delayed {
+    animation: slideUp 1s ease-out 0.3s forwards;
+    opacity: 0;
+  }
+
+  .animate-paragraph {
+    animation: slideUp 1s ease-out 0.6s forwards;
+    opacity: 0;
+  }
+
+  .animate-buttons {
+    animation: slideUp 1s ease-out 0.9s forwards;
+    opacity: 0;
   }
 `}</style>
 </div>
