@@ -127,7 +127,7 @@ const FarmerDashboard = () => {
     { 
       label: 'ML Tools', 
       icon: Brain, 
-      onClick: () => setCurrentPage('MLTools'),
+      onClick: () => setCurrentPage('YieldPrediction'),
       subItems: [
         { 
           label: 'Soil Analysis', 
