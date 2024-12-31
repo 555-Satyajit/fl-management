@@ -178,8 +178,93 @@ router.post('/reset-password/:token', async (req, res) => {
 // Get user profile (protected route)
 router.get('/profile', protect, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id)
+      .select('-password -resetPasswordToken -resetPasswordExpires -verificationToken -verificationTokenExpires')
+      .populate('connectedFarms'); // If you have farm references
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'User not found' 
+      });
+    }
+
     res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        profileData: user.profileData || {},
+        connectedFarms: user.connectedFarms || [],
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        // Add any other fields you want to return
+        address: user.address,
+        phoneNumber: user.phoneNumber,
+        preferences: user.preferences
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching user profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Update user profile (protected route)
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      profileData,
+      address,
+      phoneNumber,
+      preferences
+    } = req.body;
+
+    // Check if email is being changed and if it already exists
+    if (email && email !== req.user.email) {
+      const emailExists = await User.findOne({ email, _id: { $ne: req.user.id } });
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email already in use'
+        });
+      }
+    }
+
+    const updatedFields = {
+      ...(name && { name }),
+      ...(email && { email }),
+      ...(profileData && { profileData }),
+      ...(address && { address }),
+      ...(phoneNumber && { phoneNumber }),
+      ...(preferences && { preferences })
+    };
+
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $set: updatedFields },
+      { new: true, runValidators: true }
+    ).select('-password -resetPasswordToken -resetPasswordExpires -verificationToken -verificationTokenExpires');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
       user: {
         id: user._id,
         name: user.name,
@@ -188,41 +273,18 @@ router.get('/profile', protect, async (req, res) => {
         isEmailVerified: user.isEmailVerified,
         profileData: user.profileData,
         connectedFarms: user.connectedFarms,
-      },
+        address: user.address,
+        phoneNumber: user.phoneNumber,
+        preferences: user.preferences,
+      }
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
-
-// Update user profile (protected route)
-router.put('/profile', protect, async (req, res) => {
-  try {
-    const { name, email, profileData } = req.body;
-
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    user.name = name || user.name;
-    user.email = email || user.email;
-    user.profileData = profileData || user.profileData;
-
-    await user.save();
-
-    res.json({
-      message: 'Profile updated successfully',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        profileData: user.profileData,
-      },
+    console.error('Error updating profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
   }
 });
-
 module.exports = router;
