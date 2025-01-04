@@ -11,6 +11,7 @@ const app = express();
 
 // CORS Configuration
 const allowedOrigins = [
+  'https://webscrapping-seven.vercel.app',
   'https://agromitra.vercel.app',
   'http://localhost:3000',
   process.env.FRONTEND_URL
