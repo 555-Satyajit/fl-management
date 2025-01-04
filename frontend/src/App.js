@@ -9,7 +9,7 @@ import RegisterForm from './RegisterForm';
 import AgronomistDashboard from './AgronomistDashboard';
 import FarmerDashboard from './FarmerDashboard';
 import UnauthorizedPage from './UnauthorizedPage';
-import news from './news';
+
 
 
 function App() {
