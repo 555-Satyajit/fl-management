@@ -43,33 +43,13 @@ const userSchema = new mongoose.Schema({
     preferredCrops: [String],
     bio: String
   },
-  connectedFarms: {
+  connectedFarms: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Farm'
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    country: String,
-    postalCode: String
-  },
-  phoneNumber: {
-    type: String,
-    trim: true
-  },
-  preferences: [{
-    type: Map,
-    of: mongoose.Schema.Types.Mixed,
-    default: new Map()
-  },
-
-]
+  }]
 }, {
   timestamps: true
 });
-
-
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {

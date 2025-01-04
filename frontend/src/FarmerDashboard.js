@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from './AuthContext'
 import Overview from './dashingbooard';
-import Planning from './farmer/planning';
+import Planning from './planning';
 import Weather from './farmer/weather'
 import Analytics from './farmer/Analytics';
 import MLTools from './farmer/MLTOOLS';
@@ -110,7 +110,7 @@ const FarmerDashboard = () => {
       onClick: () => setCurrentPage('Overview')
     },
     { 
-      label: 'Planning', 
+      label: 'Features', 
       icon: Calendar, 
       onClick: () => setCurrentPage('Planning')
     },
