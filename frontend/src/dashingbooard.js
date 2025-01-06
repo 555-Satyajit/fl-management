@@ -7,6 +7,7 @@ import {
   Plant, Tractor, Database, Zap, Radio, Map, TreePine
 } from 'lucide-react';
 import { useAuth } from './AuthContext';
+import WeatherDisplay from './WeatherDisplay';
 
 const FarmerDashboard = () => {
   const { user, logout } = useAuth();
@@ -234,41 +235,15 @@ const FarmerDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Weather Alert with Animation */}
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-6xl mx-auto mt-12"
-        >
-          <div className="bg-gradient-to-r from-[#2C1810] to-[#8B4513] p-1 rounded-xl">
-            <motion.div 
-              whileHover={{ scale: 1.01 }}
-              className="bg-white rounded-lg p-6 flex items-center justify-between"
-            >
-              <div className="flex items-center space-x-4">
-                <motion.div 
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="p-3 bg-[#FAF6F1] rounded-lg"
-                >
-                  <Cloud className="h-6 w-6 text-[#8B4513]" />
-                </motion.div>
-                <div>
-                  <h3 className="text-lg font-semibold text-[#2C1810]">Incoming Weather Change</h3>
-                  <p className="text-[#8B4513]">Light rain expected in the next 24 hours</p>
-                </div>
-              </div>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-[#FAF6F1] text-[#2C1810] rounded-lg hover:bg-[#E6B17E]/20 transition-colors"
-              >
-                View Details
-              </motion.button>
-            </motion.div>
-          </div>
-        </motion.div>
+        {/* Replace the existing weather alert div with: */}
+<motion.div 
+  variants={containerVariants}
+  initial="hidden"
+  animate="visible"
+  className="max-w-6xl mx-auto mt-12"
+>
+  <WeatherDisplay />
+</motion.div>
       </main>
     </div>
   );
