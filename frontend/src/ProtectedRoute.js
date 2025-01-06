@@ -1,11 +1,35 @@
-// src/components/ProtectedRoute.js
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Prevent browser back button after authentication
+  useEffect(() => {
+    const preventBackNavigation = (e) => {
+      if (user) {
+        window.history.pushState(null, null, location.pathname);
+      }
+    };
+
+    window.history.pushState(null, null, location.pathname);
+    window.addEventListener('popstate', preventBackNavigation);
+
+    return () => {
+      window.removeEventListener('popstate', preventBackNavigation);
+    };
+  }, [user, location.pathname]);
+
+  // Handle navigation attempts to login page while authenticated
+  useEffect(() => {
+    if (user && location.pathname === '/login') {
+      const defaultRoute = user.role === 'Farmer' ? '/farmer' : '/agronomist';
+      navigate(defaultRoute, { replace: true });
+    }
+  }, [user, location.pathname, navigate]);
 
   if (loading) {
     return (
@@ -16,6 +40,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (!user) {
+    // Save the attempted location for redirect after login
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

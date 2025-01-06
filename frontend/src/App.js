@@ -9,8 +9,7 @@ import RegisterForm from './RegisterForm';
 import AgronomistDashboard from './AgronomistDashboard';
 import FarmerDashboard from './FarmerDashboard';
 import UnauthorizedPage from './UnauthorizedPage';
-
-
+import PublicRoute from './PublicRoute';
 
 function App() {
   return (
@@ -19,24 +18,46 @@ function App() {
         <AuthProvider>
           <Toaster position="top-right" />
           <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegisterForm />} />
+            {/* Wrap landing page with PublicRoute */}
             <Route 
-              path="/agronomist/*" 
+              path="/" 
+              element={
+                <PublicRoute>
+                  <LandingPage />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/login" 
+              element={
+                <PublicRoute>
+                  <LoginForm />
+                </PublicRoute>
+              } 
+            />
+            <Route 
+              path="/register" 
+              element={
+                <PublicRoute>
+                  <RegisterForm />
+                </PublicRoute>
+              } 
+            />
+            <Route
+              path="/agronomist/*"
               element={
                 <ProtectedRoute allowedRoles={['Agronomist']}>
                   <AgronomistDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/farmer/*" 
+            <Route
+              path="/farmer/*"
               element={
                 <ProtectedRoute allowedRoles={['Farmer']}>
                   <FarmerDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
@@ -45,4 +66,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
