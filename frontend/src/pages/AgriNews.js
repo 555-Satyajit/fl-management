@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 const NewsDashboard = () => {
   const [news, setNews] = useState([]);
@@ -24,17 +25,24 @@ const NewsDashboard = () => {
     fetchNews();
   }, []);
 
-  if (loading) return (
-    <div className="min-h-screen bg-[#FAF6F1] flex items-center justify-center">
-      <div className="text-xl text-[#8B4513]">Loading news...</div>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#FAF6F1] flex items-center justify-center">
+        <LoadingSpinner 
+          theme="docs"
+          size="default"
+          overlay={false}
+          isLoading={loading} // Use `loading` here
+        />
+      </div>
+    );
 
-  if (error) return (
-    <div className="min-h-screen bg-[#FAF6F1] flex items-center justify-center">
-      <div className="text-xl text-[#8B4513]">{error}</div>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="min-h-screen bg-[#FAF6F1] flex items-center justify-center">
+        <div className="text-xl text-[#8B4513]">{error}</div>
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-[#FAF6F1] py-8">
