@@ -251,19 +251,12 @@ const LandingPage = () => {
           {isMenuOpen && (
             <div className="md:hidden bg-[#2C1810] border-t border-[#E6B17E]/20">
               <div className="px-2 pt-2 pb-3 space-y-3">
-                <a href="#features" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.features}</a>
-                <a href="#ml-tools" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.mlTools}</a>
-                <a href="#testimonials" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.testimonials}</a>
-                <a href="#about" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.about}</a>
+                <Link to="#features" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.features}</Link>
+                <Link to="#ml-tools" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.mlTools}</Link>
+                <Link to="#testimonials" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.testimonials}</Link>
+                <Link to="#about" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.about}</Link>
                 <Link to="/login" className="block px-3 py-2 text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.login}</Link>
-                <div className="px-3 py-2">
-                  <LanguageToggle 
-                    currentLang={currentLang}
-                    setCurrentLang={setCurrentLang}
-                    isLanguageChange={isLanguageChange}
-                  />
-                </div>
-                <a href="/register" className="block px-3 py-2 text-[#E6B17E] font-medium">{t.nav.getStarted}</a>
+                <Link to="/register" className="block px-3 py-2 text-[#E6B17E] font-medium">{t.nav.getStarted}</Link>
               </div>
             </div>
           )}
