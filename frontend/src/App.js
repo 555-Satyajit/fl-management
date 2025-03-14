@@ -10,6 +10,7 @@ import AgronomistDashboard from './AgronomistDashboard';
 import FarmerDashboard from './FarmerDashboard';
 import UnauthorizedPage from './UnauthorizedPage';
 import PublicRoute from './PublicRoute';
+import AboutPage from './about'; 
 
 function App() {
   return (
@@ -26,7 +27,16 @@ function App() {
                   <LandingPage />
                 </PublicRoute>
               } 
+            />  
+           <Route 
+              path="/about" 
+              element={
+                <PublicRoute>
+                  <AboutPage />
+                </PublicRoute>
+              } 
             />
+
             <Route 
               path="/login" 
               element={

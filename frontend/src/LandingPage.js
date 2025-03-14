@@ -223,7 +223,7 @@ const LandingPage = () => {
                 <a href="#features" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.features}</a>
                 <a href="#ml-tools" className="text-[#E6B17E] hover:text-[#F3D5B5]">{t.nav.mlTools}</a>
                 <a href="#testimonials" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.testimonials}</a>
-                <a href="#about" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.about}</a>
+                <a href="/about" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.about}</a>
                 <a href="/login" className="text-[#E6B17E] hover:text-[#F3D5B5] transition-colors duration-300">{t.nav.login}</a>
               </div>
             </div>
