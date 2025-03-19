@@ -3,16 +3,17 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './ProtectedRoute';
+import PublicRoute from './PublicRoute';
 import LandingPage from './LandingPage';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import AgronomistDashboard from './AgronomistDashboard';
 import FarmerDashboard from './FarmerDashboard';
 import UnauthorizedPage from './UnauthorizedPage';
-import PublicRoute from './PublicRoute';
 import AboutPage from './about';
 import ForumPage from './pages/Network';
 import PostDetail from './pages/forum/PostDetail';
+import KnowledgeBaseContainer from './pages/Knowledge'; // ✅ Import Knowledge Base
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
         <AuthProvider>
           <Toaster position="top-right" />
           <Routes>
-            {/* Wrap landing page with PublicRoute */}
+            {/* Public Routes */}
             <Route 
               path="/" 
               element={
@@ -30,7 +31,7 @@ function App() {
                 </PublicRoute>
               } 
             />  
-           <Route 
+            <Route 
               path="/about" 
               element={
                 <PublicRoute>
@@ -38,7 +39,6 @@ function App() {
                 </PublicRoute>
               } 
             />
-
             <Route 
               path="/login" 
               element={
@@ -55,6 +55,18 @@ function App() {
                 </PublicRoute>
               } 
             />
+            
+            {/* ✅ Knowledge Base Route (Accessible to Farmers & Agronomists) */}
+            <Route 
+              path="/knowledge-base" 
+              element={
+                <ProtectedRoute allowedRoles={["Farmer", "Agronomist"]}>
+                  <KnowledgeBaseContainer />
+                </ProtectedRoute>
+              } 
+            />
+
+            {/* Agronomist Dashboard */}
             <Route
               path="/agronomist/*"
               element={
@@ -63,6 +75,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
+            {/* Farmer Dashboard */}
             <Route
               path="/farmer/*"
               element={
@@ -71,6 +85,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
+            {/* Forum Routes */}
             <Route
               path="/forum"
               element={
@@ -87,6 +103,8 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Unauthorized Page */}
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
         </AuthProvider>

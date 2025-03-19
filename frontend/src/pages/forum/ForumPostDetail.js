@@ -4,6 +4,7 @@ import axios from 'axios';
 import { FaArrowLeft, FaHeart, FaRegHeart } from 'react-icons/fa';
 import { useAuth } from '../../AuthContext';
 import toast from 'react-hot-toast';
+import farmer from "./ForumPostsList"
 
 const ForumPostDetail = ({ onLike }) => {
   const { id } = useParams();
