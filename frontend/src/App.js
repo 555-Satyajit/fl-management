@@ -1,4 +1,4 @@
-import './App.css';
+import './App.css'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './AuthContext';
 import { Toaster } from 'react-hot-toast';
@@ -10,7 +10,9 @@ import AgronomistDashboard from './AgronomistDashboard';
 import FarmerDashboard from './FarmerDashboard';
 import UnauthorizedPage from './UnauthorizedPage';
 import PublicRoute from './PublicRoute';
-import AboutPage from './about'; 
+import AboutPage from './about';
+import ForumPage from './pages/Network';
+import PostDetail from './pages/forum/PostDetail';
 
 function App() {
   return (
@@ -56,7 +58,7 @@ function App() {
             <Route
               path="/agronomist/*"
               element={
-                <ProtectedRoute allowedRoles={['Agronomist']}>
+                <ProtectedRoute allowedRoles={["Agronomist"]}>
                   <AgronomistDashboard />
                 </ProtectedRoute>
               }
@@ -64,8 +66,24 @@ function App() {
             <Route
               path="/farmer/*"
               element={
-                <ProtectedRoute allowedRoles={['Farmer']}>
+                <ProtectedRoute allowedRoles={["Farmer"]}>
                   <FarmerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/forum"
+              element={
+                <ProtectedRoute allowedRoles={["Farmer", "Agronomist"]}>
+                  <ForumPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/forum/posts/:id"
+              element={
+                <ProtectedRoute allowedRoles={["Farmer", "Agronomist"]}>
+                  <PostDetail />
                 </ProtectedRoute>
               }
             />

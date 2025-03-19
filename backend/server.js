@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/User');
+const forumRoutes = require('./routes/fourm'); 
 
 const app = express();
 
@@ -66,6 +67,8 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/forum', forumRoutes); // Add the forum routes
+
 
 // 404 handler
 app.use((req, res, next) => {
