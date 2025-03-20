@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/User');
 const forumRoutes = require('./routes/fourm'); 
 const knowledgeBaseRoutes = require('./routes/KnowledgeBase');
+const Equipment = require('./routes/Equipment')
 const app = express();
 
 // CORS Configuration
@@ -69,7 +70,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/forum', forumRoutes); // Add the forum routes
 app.use('/api/knowledge-base', knowledgeBaseRoutes); // Add this line
-
+app.use('/api/equipment',Equipment)
 
 
 // 404 handler
