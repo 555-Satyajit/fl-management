@@ -14,6 +14,8 @@ import Weather from './farmer/weather'
 import Analytics from './farmer/Analytics';
 import MLTools from './farmer/MLTOOLS';
 import YieldPrediction from './YieldPrediction';
+import Water from './Water';  // adjust path as needed
+
 
 
 const FarmerDashboard = () => {
@@ -79,7 +81,7 @@ const FarmerDashboard = () => {
     MLTools: MLTools,
     Settings: Settings,
     YieldPrediction: YieldPrediction,
-
+    Water:Water,   // adjust path as needed
   };
 
   // Function to render current page
@@ -130,9 +132,9 @@ const FarmerDashboard = () => {
       onClick: () => setCurrentPage('YieldPrediction'),
       subItems: [
         { 
-          label: 'Soil Analysis', 
+          label: 'Water Prediction', 
           icon: Microscope,
-          onClick: () => setCurrentPage('SoilAnalysis')
+          onClick: () => setCurrentPage('Water')
         },
         { 
           label: 'Yield Prediction', 
