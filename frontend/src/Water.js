@@ -3,7 +3,7 @@ import { Droplets, ExternalLink, Cloud, Thermometer, Timer, BarChart4, Wind } fr
 
 const Water = () => {
   const handleRedirect = () => {
-    window.open('https://huggingface.co/spaces/Sriya555/smart_irrigation', '_blank');
+    window.open('https://huggingface.co/spaces/Sriya555/water');
   };
 
   return (
